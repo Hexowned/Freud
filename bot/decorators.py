@@ -155,7 +155,7 @@ def respect_role_hierarchy(rarget_arg: Union[int, str] = 0) -> Callable:
     """
     def wrap(func: Callable) -> Callable:
         @wraps(func)
-        async def inner(self: COg, ctx: Context, *args, **kwargs) -> None:
+        async def inner(self: Cog, ctx: Context, *args, **kwargs) -> None:
             try:
                 target = kwargs[target_arg]
             except KeyError:
