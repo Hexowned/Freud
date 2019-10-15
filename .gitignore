@@ -1,20 +1,20 @@
+# Byte-compiled files
+__pychache__/
+*.py[cod]
+*$py.class
+
 # PyCharm
 .idea/
 
 #VSCode
 .vscode/
 
-# pycache
-bot/__pycache__/
-bot/cogs/__pychache__/
-__pychache__/
-
 # Config
 config.yml
 config.yml/
 
 # Logs
-/logs/
+log.*
 
 # Virtual Environment
 /venv
