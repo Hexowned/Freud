@@ -1,0 +1,13 @@
+# PyCharm
+.idea/
+.idea
+__pychache__/
+__pychache__
+
+# Config
+config.json
+config.json/
+
+# Logs
+/logs/
+
