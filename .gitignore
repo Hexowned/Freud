@@ -1,16 +1,24 @@
 # PyCharm
 .idea/
-.idea
+
+#VSCode
+.vscode/
 
 # pycache
-bot/__pycache__
-__pychache__
+bot/__pycache__/
+bot/cogs/__pychache__/
+__pychache__/
+
 # Config
-config.json
-config.json/
+config.yml
+config.yml/
 
 # Logs
 /logs/
 
 # Virtual Environment
 /venv
+
+#MacOS
+.DS_Store
+.DS_Store/
