@@ -165,7 +165,7 @@ def respect_role_hierarchy(rarget_arg: Union[int, str] = 0) -> Callable:
                     raise ValueError(
                         f"Could not find target argument at position {target_arg!r}")
 
-            if not isinstancetarget, Member):
+            if not isinstance(target, Member):
                 log.trace("The target is not a discord.Member; skipping role hierarchy check.")
                 await func(self, ctx, *args, **kwargs)
                 return
@@ -175,7 +175,7 @@ def respect_role_hierarchy(rarget_arg: Union[int, str] = 0) -> Callable:
             if target.top_role >= actor.top_role:
                 log.info(
                     f"{actor} ({actor.id}) attempted to {cmd} "
-                    f"{target} ({target.id}), who has an equal or higher top role.""
+                    f"{target} ({target.id}), who has an equal or higher top role."
                 )
                 await ctx.send(
                     f":x: {actor.mention}, you may not {cmd} "
