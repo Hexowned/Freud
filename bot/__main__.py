@@ -1,5 +1,4 @@
 import logging
-import yaml
 import socket
 import discord
 from discord.ext.commands import Bot, when_mentioned_or

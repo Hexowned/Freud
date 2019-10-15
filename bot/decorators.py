@@ -1,3 +1,5 @@
+# flake8
+
 import logging
 import random
 from asyncio import Lock, sleep
@@ -120,8 +122,7 @@ def redirect_output(destination_channel: int, bypass_roles: Container[int] = Non
             redirect_channel = ctx.guild.get_channel(destination_channel)
             old_channel = ctx.channel
 
-            log.trace(
-                f"Redirecting output of {ctx.author}'s command '{ctx.command.name}' to {redirect_channel.name}")
+            log.trace(f"Redirecting output of {ctx.author}'s command '{ctx.command.name}' to {redirect_channel.name}")
             ctx.channel = redirect_channel
             await ctx.channel.send(f"Here's the output of your command, {ctx.author.mention}")
             await func(self, ctx, *args, **kwargs)
@@ -165,8 +166,7 @@ def respect_role_hierarchy(rarget_arg: Union[int, str] = 0) -> Callable:
                         f"Could not find target argument at position {target_arg!r}")
 
             if not isinstancetarget, Member):
-                log.trace(
-                    "The target is not a discord.Member; skipping role hierarchy check.")
+                log.trace("The target is not a discord.Member; skipping role hierarchy check.")
                 await func(self, ctx, *args, **kwargs)
                 return
 
