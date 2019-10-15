@@ -11,3 +11,5 @@ config.json/
 # Logs
 /logs/
 
+# Virtual Environment
+/venv
