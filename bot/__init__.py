@@ -1,6 +1,6 @@
 import logging
 import sys
-from logging import Logger, StreamHandler, handlers
+from logging import Logger, StreamHandler
 from pathlib import Path
 
 from logmatic import JsonFormatter
