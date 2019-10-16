@@ -1,11 +1,11 @@
 import logging
+from .clean import Clean
 from discord.ext.commands import Bot
-from .events import Events
 
 log = logging.getLogger(__name__)
 
 
 def setup(bot: Bot) -> None:
-    """Event cog load"""
-    bot.add_cog(Events(bot))
-    log.info("Cog loaded: Events")
+    """Clean cog load."""
+    bot.add_cog(Clean(bot))
+    log.info("Cog loaded: Clean")

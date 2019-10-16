@@ -147,7 +147,7 @@ def redirect_output(destination_channel: int, bypass_roles: Container[int] = Non
     return wrap
 
 
-def respect_role_hierarchy(rarget_arg: Union[int, str] = 0) -> Callable:
+def respect_role_hierarchy(target_arg: Union[int, str] = 0) -> Callable:
     """
     Ensure the highest role of the invoking member is greater than that of the target member.
     If the condition fails, a warning is sent tot he invoking context. A target which is not an
@@ -170,8 +170,8 @@ def respect_role_hierarchy(rarget_arg: Union[int, str] = 0) -> Callable:
                 await func(self, ctx, *args, **kwargs)
                 return
 
-            cmd=ctx.command.name
-            actor=ctx.author
+            cmd = ctx.command.name
+            actor = ctx.author
             if target.top_role >= actor.top_role:
                 log.info(
                     f"{actor} ({actor.id}) attempted to {cmd} "

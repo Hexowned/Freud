@@ -4,7 +4,7 @@ import logging
 from abc import abstractmethod
 from typing import Coroutine, Dict, Union
 
-# from bot.utilities import CogABCMeta
+from bot.utilities import CogABCMeta
 
 log = logging.getLogger(__name__)
 
@@ -48,14 +48,13 @@ class Scheduler(metaclass=CogABCMeta):
         del self.scheduled_task[task_id]
 
 
-def create_task(loop: asyncio.AbstractEventLoop, coro_or_future: Union[Coroutine, asyncio.Future])
+def create_task(loop: asyncio.AbstractEventLoop, coro_or_future: Union[Coroutine, asyncio.Future]) -> asyncio.Task:
+    """Creates an asyncio.Task object from a coroutine or future object."""
+    task: asyncio.Task = asyncio.ensure_future(coro_or_future, loop=loop)
 
-"""Creates an asyncio.Task object from a coroutine or future object"""
-task: asyncio.Task = asyncio.ensure_future(coro_or_future, loop=loop)
-
-# Silently ignore exceptions in a callback (handles the CancelledError nonsense)
-task.add_done_callback(_silent_exception)
-return task
+    # Silently ignore exceptions in a callback (handles the CancelledError nonsense)
+    task.add_done_callback(_silent_exception)
+    return task
 
 
 def _silent_exception(future: asyncio.Future) -> None:

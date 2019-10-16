@@ -9,6 +9,7 @@ import yaml
 
 log = logging.getLogger(__name__)
 
+
 with open("config.yml", encoding="UTF-8") as f:
     config_yaml = yaml.safe_load(f)
 
@@ -103,6 +104,11 @@ class Emojis(metaclass=YAML):
     section = "style"
     subsection = "emojis"
 
+    status_online: str
+    status_offline: str
+    status_idle: str
+    status_dnd: str
+
 
 class Icons(metaclass=YAML):
     section = "style"
@@ -144,6 +150,7 @@ BOT_DIR = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.abspath(os.path.join(BOT_DIR, os.pardir))
 
 # Default role combinations
+OWNER_ROLE = Roles.owner
 MODERATION_ROLES = Roles.moderator, Roles.admin, Roles.owner
 STAFF_ROLES = Roles.staff, Roles.moderator, Roles.admin, Roles.owner
 

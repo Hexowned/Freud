@@ -23,7 +23,6 @@ class Events(Cog):
         embed = Embed(description="Connected!")
         embed.set_author(
             name="Freud",
-            url="https://github.com/Nexowned/Freud",
             icon_url=(
                 "https://avatars3.githubusercontent.com/u/"
                 "49051663?s=400&u=c410b8b24353b442cf1c93e8bb446f7acf2d84bc&v=4"
