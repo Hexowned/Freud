@@ -26,6 +26,8 @@ bot.http_session = ClientSession(
 bot.load_extension("bot.cogs.events")
 bot.load_extension("bot.cogs.information")
 bot.load_extension("bot.cogs.clean")
+bot.load_extension("bot.cogs.modlog")
+bot.load_extension("bot.cogs.verification")
 
 bot.run(BotConfig.token)
 

@@ -12,10 +12,10 @@ from discord.ext.commands import Bot, Cog, Context
 
 from bot.constants import Channels, Colours, Emojis, Event, Guild as GuildConstant, Icons, URLs
 from bot.utilities.time import humanize_delta
+from .utilities import UserTypes
 
 log = logging.getLogger(__name__)
 
-USER_TYPES = t.Union[discord.Member, discord.User]
 GUILD_CHANNEL = t.Union[discord.CategoryChannel, discord.TextChannel, discord.VoiceChannel]
 
 CHANNEL_CHANGES_UNSUPPORTED = ("permissions",)

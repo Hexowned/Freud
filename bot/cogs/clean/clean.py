@@ -169,6 +169,11 @@ class Clean(Cog):
             channel_id=Channels.modlog,
         )
 
+# =============================================================
+# //////////////////COMMANDS///////////////////////////////////
+# =============================================================
+
+
     @group(invoke_without_command=True, name="clean", hidden=True)
     @with_role(*MODERATION_ROLES)
     async def clean_group(self, ctx: Context) -> None:

@@ -14,7 +14,7 @@ with open("config.yml", encoding="UTF-8") as f:
     config_yaml = yaml.safe_load(f)
 
 
-class YAML(type):
+class YAMLGet(type):
     """
     Implements a custom metaclass for accessing configuration data by simply accessing class attributes.
     Supports getting configuration from up to 2 levels of nested configuration through `section` and `subsection`
@@ -40,25 +40,25 @@ class YAML(type):
 
 
 # Dataclasses
-class Bot(metaclass=YAML):
+class Bot(metaclass=YAMLGet):
     section = "bot"
 
     token: str
 
 
-class Cooldowns(metaclass=YAML):
+class Cooldowns(metaclass=YAMLGet):
     section = "bot"
     subsection = "cooldowns"
 
 
-class CleanMessages(metaclass=YAML):
+class CleanMessages(metaclass=YAMLGet):
     section = "bot"
     subsection = "clean"
 
     message_limit: int
 
 
-class Roles(metaclass=YAML):
+class Roles(metaclass=YAMLGet):
     section = "guild"
     subsection = "roles"
 
@@ -77,30 +77,76 @@ class Roles(metaclass=YAML):
     muted: int
 
 
-class Channels(metaclass=YAML):
+class Channels(metaclass=YAMLGet):
     section = "guild"
     subsection = "channels"
 
+    chat: int
+    modlog: int
+    announcements: int
+    verification: int
+    website: int
+    forum: int
+    teasers: int
+    updates: int
+    gitupdates: int
+    faq: int
+    general: int
+    nx_suggestions: int
+    help: int
+    bug_reports: int
+    player_reports: int
     bot: int
+    memes: int
+    nsfw: int
+    buy: int
+    sell: int
+    trade: int
+    price_check: int
 
 
-class Guild(metaclass=YAML):
+class Guild(metaclass=YAMLGet):
     section = "guild"
 
     id: int
     ignored: List[int]
 
 
-class Filter(metaclass=YAML):
+class Filter(metaclass=YAMLGet):
     section = "filter"
 
+    filter_zalgo: bool
+    filter_invites: bool
+    filter_domains: bool
+    watch_rich_embeds: bool
+    watch_words: bool
+    watch_tokens: bool
 
-class Colours(metaclass=YAML):
+    # Notifications are not expected for "watchlist" type filters
+    notify_user_zalgo: bool
+    notify_user_invites: bool
+    notify_user_domains: bool
+
+    ping_everyone: bool
+    guild_invite_whitelist: List[int]
+    domain_blacklist: List[str]
+    word_watchlist: List[str]
+    token_watchlist: List[str]
+
+    channel_whitelist: List[int]
+    role_whitelist: List[int]
+
+
+class Colours(metaclass=YAMLGet):
     section = "style"
     subsection = "colours"
 
+    soft_red: int
+    soft_green: int
+    soft_orange: int
 
-class Emojis(metaclass=YAML):
+
+class Emojis(metaclass=YAMLGet):
     section = "style"
     subsection = "emojis"
 
@@ -109,26 +155,70 @@ class Emojis(metaclass=YAML):
     status_idle: str
     status_dnd: str
 
+    bullet: str
+    new: str
+    pencil: str
+    cross_mark: str
 
-class Icons(metaclass=YAML):
+
+class Icons(metaclass=YAMLGet):
     section = "style"
     subsection = "icons"
 
+    crown_blurple: str
+    crown_green: str
+    crown_red: str
 
-class Categories(metaclass=YAML):
+    filtering: str
+
+    guild_update: str
+
+    hash_blurple: str
+    hash_green: str
+    hash_red: str
+
+    message_bulk_delete: str
+    message_delete: str
+    message_edit: str
+
+    sign_in: str
+    sign_out: str
+
+    token_removed: str
+
+    user_ban: str
+    user_unban: str
+    user_update: str
+
+    user_mute: str
+    user_unmute: str
+    user_verified: str
+
+    user_warn: str
+
+    pencil: str
+
+    remind_blurple: str
+    remind_green: str
+    remind_red: str
+
+    questionmark: str
+
+
+class Categories(metaclass=YAMLGet):
     section = "guild"
     subsection = "categories"
 
 
-class Keys(metaclass=YAML):
+class Keys(metaclass=YAMLGet):
     section = "keys"
 
 
-class URLs(metaclass=YAML):
+class URLs(metaclass=YAMLGet):
     section = "urls"
 
 
-class AntiSpam(metaclass=YAML):
+class AntiSpam(metaclass=YAMLGet):
     section = "anti_spam"
 
     clean_offending: bool
@@ -138,7 +228,7 @@ class AntiSpam(metaclass=YAML):
     rules: Dict[str, Dict[str, int]]
 
 
-class RedirectOutput(metaclass=YAML):
+class RedirectOutput(metaclass=YAMLGet):
     section = "redirect_output"
 
     delete_invocation: bool

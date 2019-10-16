@@ -203,10 +203,6 @@ class Information(Cog):
                 **Member Information**
                 Joined: {joined}
                 Roles: {roles or None}
-
-                **Infractions**
-                Total:
-                Active:
             """)
         )
 
