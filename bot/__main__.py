@@ -9,8 +9,8 @@ from bot.constants import Bot as BotConfig
 log = logging.getLogger('bot')
 
 bot = Bot(
-    command_prefix=when_mentioned_or('Freud ', 'freud ', '!'),
-    activity=discord.Game(name="Commands: Freud help"),
+    command_prefix=when_mentioned_or(BotConfig.prefix),
+    activity=discord.Game(name="MoonlightMS"),
     case_insensitive=True,
     max_messages=10_000,
 )
@@ -28,6 +28,7 @@ bot.load_extension("bot.cogs.information")
 bot.load_extension("bot.cogs.clean")
 bot.load_extension("bot.cogs.modlog")
 bot.load_extension("bot.cogs.verification")
+bot.load_extension("bot.cogs.help")
 
 bot.run(BotConfig.token)
 

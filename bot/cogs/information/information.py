@@ -93,8 +93,6 @@ class Information(Cog):
     async def server_info(self, ctx: Context) -> None:
         """Returns an embed full of server information."""
         created = time_since(ctx.guild.created_at, precision="days")
-        features = ", ".join(ctx.guild.features)
-        region = ctx.guild.region
 
         # How many of each type of channel?
         roles = len(ctx.guild.roles)
@@ -136,8 +134,6 @@ class Information(Cog):
             description=textwrap.dedent(f"""
                 **Server information**
                 Created: {created}
-                Voice region: {region}
-                Features: {features}
 
                 **Counts**
                 Members: {member_count:,}

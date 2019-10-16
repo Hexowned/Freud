@@ -153,7 +153,7 @@ class HelpSession:
 
     async def timeout(self, second: int = 30) -> None:
         """Waits for a set number of seconds, then stops the help session."""
-        await asyncio.sleep(seconds)
+        await asyncio.sleep(1)
         await self.stop()
 
     def reset_timeout(self) -> None:
@@ -179,7 +179,7 @@ class HelpSession:
         emoji = str(reaction.emoji)
 
         # check if valid action
-        if emojie not in REACTIONS:
+        if emoji not in REACTIONS:
             return
 
         self.reset_timeout()
@@ -273,3 +273,41 @@ class HelpSession:
     async def build_pages(self) -> None:
         """Builds the list of content pages to be paginate through in the help message, as a list of str."""
         # Use LinePaginator to restrict embed line height
+        paginator = LinePaginator(prefix='', suffix='', max_lines=self._max_lines)
+
+        prefix = constants.Bot.prefix
+
+        # show signature if query is a command
+        if isinstance(self.query, commands.Command):
+            signature = self._get_command_params(self.query)
+            parent = self.query.full_parent_name + ' ' if self.query.parent else ''
+            paginator.add_line(f'**```{prefix}{parent}{signature}```**')
+
+            # show command aliases
+            aliases = ', '.join(f'`{a}`' for a in self.query.aliases)
+            if aliases:
+                paginator.add_line(f'**Can also use:** {aliases}\n')
+
+            if not await self.query.can_run(self._ctx):
+                paginator.add_line('***You cannot run this command.***\n')
+
+        # show name if query is a cog
+        if isinstance(self.query, Cog):
+            paginator.add_line(f'**{self.query.name}**')
+
+        if self.description:
+            paginator.add_line(f'*{self.description}*')
+
+        # list all children commands of the queried object
+        if isinstance(self.query, (commands.GroupMixin, Cog)):
+
+            # remove hidden commands if session is not wanting hiddens
+            if not self._show_hidden:
+                filtered = [c for c in self.query.commands if not c.hidden]
+            else:
+                filtered = self.query.commands
+
+            # if after filter there are no commands, finish up
+            if not filtered:
+                self._pages = paginator.pages
+                return
