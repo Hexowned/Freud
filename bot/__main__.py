@@ -10,7 +10,7 @@ log = logging.getLogger('bot')
 
 bot = Bot(
     command_prefix=when_mentioned_or(BotConfig.prefix),
-    activity=discord.Game(name="MoonlightMS"),
+    activity=discord.Game(name="Moderating Discord"),
     case_insensitive=True,
     max_messages=10_000,
 )
@@ -29,6 +29,7 @@ bot.load_extension("bot.cogs.clean")
 bot.load_extension("bot.cogs.modlog")
 bot.load_extension("bot.cogs.verification")
 bot.load_extension("bot.cogs.help")
+bot.load_extension("bot.cogs.antispam")
 
 bot.run(BotConfig.token)
 

@@ -1,17 +1,19 @@
 import logging
+import asyncio
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from operator import itemgetter
-from typing import Dict, Iterable, Set
+from typing import Dict, Iterable, Set, List
 
-from discord import Colour, Member, Message, Object, TextChannel
+from discord import Colour, Member, Message, Object, TextChannel, NotFound
 from discord.ext.commands import Bot, Cog
 
 from bot import rules
 from bot.cogs.modlog import ModLog
 from bot.constants import (
     AntiSPam as AntiSpamConfig, Channels,
-    Colours, Filter,
+    Colours, Filter, Event,
     Guild as GuildConfig, Icons, STAFF_ROLES,
 )
 from bot.converters import Duration
@@ -201,3 +203,56 @@ class AntiSpam(Cog):
                 dt_remove_role_after,
                 reason=reason
             )
+
+    async def maybe_delete_messages(self, channel: TextChannel, messages: List[Message]) -> None:
+        """Cleans the messages if cleaning is configured"""
+        if AntiSpamConfig.clean_offending:
+            # If we have more than one message, we can use bulk delete.
+            if len(messages) > 1:
+                message_ids = [message.id for message in messages]
+                self.mod_log.ignore(Event.message_delete, *message_ids)
+                await channel.delete_messages(messages)
+
+            # Delete the message directly instead
+            else:
+                self.mod_log.ignore(Event.message_delete, messages[0].id)
+                try:
+                    await messages[0].delete()
+                except NotFound:
+                    log.info(f"Tried to delete message `{messages[0].id}`, but message could not be found.")
+
+    async def _process_deletion_context(self, context_id: int) -> None:
+        """Process the Deletion Context queue."""
+        log.trace("Sleeping before processing message deletion queue.")
+        await asyncio.sleep(10)
+
+        if context_id not in self.message_deletion_queue:
+            log.error(f"Started processing deletiong queue for context `{context_id}`, but it was not found!")
+            return
+
+        deletion_context = self.message_deletion_queue.pop(context_id)
+        await deletion_context.upload_messages(self.bot.user.id, self.mod_log)
+
+
+def validate_config(rules: Mapping = AntiSpamConfig.rules) -> Dict[str, str]:
+    """Validates the antispam configurations"""
+    validation_errors = {}
+    for name, config in rules.items():
+        if name not in RULE_FUNCTION_MAPPING:
+            log.error(
+                f"Unrecognized antispam rule `{name}`. "
+                f"Valid rules are: {'. '.join(RULE_FUNCTION_MAPPING)}"
+            )
+            validation_errors[name] = f"`{name}` is not recognized as an antispam rule."
+            continue
+
+        for required_key in ('interval', 'max'):
+            if required_key not in config:
+                log.error(
+                    f"`{required_key}` is required but was not "
+                    f"set in rule `{name}`'s configuration."
+                )
+                validation_errors[name] = f"Key `{required_key}` is required but not set for rule `{name}`"
+
+        return validation_errors
+
