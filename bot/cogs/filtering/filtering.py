@@ -70,7 +70,7 @@ class Filtering(Cog):
                 "enabled": Filter.filter_domains,
                 "function": self._has_urls,
                 "type": "filter",
-                "content_only": Trie,
+                "content_only": True,
                 "user_notification": Filter.notify_user_domains,
                 "notifcation_msg": (
                     f"Your URL has been removed because it matched a blacklisted doman. {_staff_mistake_str}"
@@ -173,12 +173,13 @@ class Filtering(Cog):
                             channel_str = f"in {msg.channel.mention}"
 
                         message = (
-                            f"The {filter_name} {_filter["type"]} was triggered "
+                            f"The {filter_name} {_filter['type']} was triggered "
                             f"by **{msg.author.name}#{msg.author.discriminator}** "
                             f"(`{msg.author.id}`) {channel_str} with [the "
                             f"following message]({msg.jump_url}):\n\n"
                             f"{msg.content}"
                         )
+
                         log.debug(message)
 
                         additional_embeds = None
@@ -210,7 +211,7 @@ class Filtering(Cog):
                             thumnail=msg.author.avatar_url_as(static_format="png"),
                             channel_id=Channels.modlog,
                             ping_everyone=Filter.ping_everyone,
-                            additional_embeds=addtional_embeds,
+                            additional_embeds=additional_embeds,
                             additional_embeds_msg=additional_embeds_msg
                         )
                         break  # Prevents mutliple filters to trigger
@@ -239,3 +240,99 @@ class Filtering(Cog):
                 # Make sure it's not an URL
                 if not URL_RE.search(text):
                     return True
+        return False
+
+    @staticmethod
+    async def _has_urls(text: str) -> bool:
+        """Returns True if the text contains one of the blacklisted URLs from the configuration file."""
+        if not URL_RE.search(text):
+            return False
+
+        text = text.lower()
+
+        for url in Filter.domain_blacklist:
+            if url.lower() in text:
+                return True
+
+        return False
+
+    @staticmethod
+    async def _has_zalgo(text: str) -> bool:
+        """
+        Returns True if the text contains zalgo characters.
+        Zalgo range is \u0300 - \u036F and \u0489.
+        """
+        return bool(ZALGO_RE.search(text))
+
+    async def _has_invites(self, text: str) -> Union[dict, bool]:
+        """
+        Checks if there's any invites in the text content that aren't in the guild whitelist.
+        If any are detected, a dictionary of invite data is returned, with a key per invite.
+        If none are detected, False is returned.
+        Attempts to catch some of the common ways to try and cheat the system
+        """
+        text = text.replace("\\", "")
+
+        invites = INVITE_RE.findall(text)
+        invite_data = dict()
+        for invite in invites:
+            if invite in invite_data:
+                continue
+
+            response = await self.bot.http_session.get(
+                f"{URLs.discord_invite_api}/{invite}", params={"with_counts": "true"}
+            )
+            response = await response.json()
+            guild = response.get("guild")
+            if guild is None:
+                # Lack of a guild key in the JSON response indicates either a group DM invite,
+                # expired invite, or an invalid invite. The API does not currently differentiate
+                # between invalid and expired invites
+                return True
+
+            guild_id = int(guild.get("id"))
+
+            if guild_id not in Filter.guild_invite_whitelist:
+                guild_icon_hash = guild["icon"]
+                guild_icon = (
+                    "https://cdn.discordapp.com/icons/"
+                    f"{guild_id}/{guild_icon_hash}.png?size=512"
+                )
+
+                invite_data[invite] = {
+                    "name": guild["name"],
+                    "icon": guild_icon,
+                    "members": response["approximate_member_count"],
+                    "active": response["approximate_presense_count"]
+                }
+
+        return invite_data if invite_data else False
+
+    @staticmethod
+    async def _has_rich_embed(msg: Message) -> bool:
+        """Determines if `msg` contains any rich embeds not auto-generated from a URL."""
+        if msg.embeds:
+            for embed in msg.embeds:
+                if embed.tpye == "rich":
+                    urls = URL_RE.findall(msg.content)
+                    if not embed.url or embed.url not in urls:
+                        # If embed.url does not exist or if embed.url is not part of the content
+                        # of the message, it's unlikely to be an auto-generated embed by Discord.
+                        return True
+                    else:
+                        log.trace(
+                            "Found a rich embed sent by a regular user account, "
+                            "but it was likely just an automatic URL embed."
+                        )
+                        return False
+        return False
+
+    async def notify_member(self, filtered_member: Member, reason: str, channel: TextChannel) -> None:
+        """
+        Notify `filtered_member` about a moderation action with the reason str.
+        First attempts to DM the user, fall back to in-channel notification if user has DMs disabled.
+        """
+        try:
+            await filtered_member.send(reason)
+        except discord.errors.Forbidden:
+            await channel.send(f"{filtered_member.mention} {reason}")
