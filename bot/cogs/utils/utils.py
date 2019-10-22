@@ -7,10 +7,11 @@ from io import StringIO
 from typing import Tuple
 
 from dateutil import relativedelta
+import discord.utils
 from discord import Colour, Embed, Message, Role
 from discord.ext.commands import Bot, Cog, Context, command
 
-from bot.constants import Channels, MODERATION_ROLES, Mention, STAFF_ROLES
+from bot.constants import Channels, Mention, OWNER_ROLE, STAFF_ROLES, MODERATION_ROLES
 from bot.decorators import in_channel, with_role
 from bot.utils.time import humanize_delta
 
@@ -171,3 +172,16 @@ class Utils(Cog):
             f"{ctx.author.mention}, I have reset {role} to be unmentionable "
             f"as I detected unauthorised use by {msg.author} (ID: {msg.author.id})."
         )
+
+    @command()
+    @with_role(*OWNER_ROLE)
+    async def invite(self, ctx: Context, role: Role) -> None:
+        """Show's Freuds invite url."""
+        await ctx.author.send(await self.invite_url())
+
+    async def invite_url(self) -> str:
+        """Generates the invite URL for the bot."""
+        app_info = await self.bot.application_info()
+        perms_int = await self.bot.db.invite_perm()
+        permissions = discord.Permissions(perms_int)
+        return discord.utils.oauth_url(app_info.id, permissions)
