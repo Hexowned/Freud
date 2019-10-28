@@ -214,9 +214,9 @@ class Extension(commands.Cog):
     def cog_check(self, ctx: Context) -> bool:
         """Only allow moderators and owner to invoke the commands in this cog."""
         return with_role_check(ctx, *MODERATION_ROLES, Roles.owner)
-    
+
     async def cog_command_error(self, ctx: Context, error: Exception) -> None:
         """Handle `BadArgument` errors locally to prevent the help command from showing."""
         if isinstance(error, commands.BadArgument):
-            await ctx.send(str(erro))
+            await ctx.send(str(error))
             error.handled = True
