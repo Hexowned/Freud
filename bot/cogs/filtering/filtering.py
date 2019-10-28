@@ -184,7 +184,7 @@ class Filtering(Cog):
                             f"by **{msg.author.name}#{msg.author.discriminator}** "
                             f"(`{msg.author.id}`) {channel_str} with [the "
                             f"following message]({msg.jump_url}):\n\n"
-                            f"{msg.content}"
+                            f"{message_content}"
                         )
 
                         log.debug(message)
